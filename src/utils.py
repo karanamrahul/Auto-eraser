@@ -4,7 +4,7 @@ import numpy as np
 import random
 import torch
 from coco_names import COCO_INSTANCE_CATEGORY_NAMES as coco_names
-import speech_recognition as sr
+# import speech_recognition as sr
 
 """
 
