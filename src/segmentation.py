@@ -1,3 +1,9 @@
+########################################################################################################################
+#                            SEGMENTATION FUNCTIONS                                                                    # 
+########################################################################################################################        
+
+
+
 from helper import *
 from coco_names import *
 
@@ -20,7 +26,7 @@ def get_masks_video(path, objects_to_mask, min_confidence, inflation):
     with HiddenPrints():
         model_mask_rcnn = model_zoo.get_model('mask_rcnn_fpn_resnet101_v1d_coco', pretrained=True) # get model
     video = cv2.VideoCapture(path) # open video
-    frames_per_second = int(video.get(cv2.CAP_PROP_FRAME_COUNT)) # get number of frames
+    frames_per_second = int(video.get(cv2.CAP_PROP_FPS)) # get number of frames
     
     if (video.isOpened() == False):
         print("Error opening video stream or file")
@@ -70,7 +76,7 @@ def get_masks_image(image, objects_to_mask, fileName,frame_id,model_mask,thres, 
     
     if objects_to_mask == "": # if no objects to mask
         img_name = fileName + str(frame_id)
-        cv2.write('output/' + fileName + '/' + img_name + '_input.png', org_img) # save input image
+        cv2.imwrite('output/' + fileName + '/' + img_name + '_input.png', org_img) # save input image
         img_black = copy.deepcopy(org_img) # create black image 
         j = 0 # row
         for row in img_black: # row in image to be masked (black)
@@ -102,8 +108,8 @@ def get_masks_image(image, objects_to_mask, fileName,frame_id,model_mask,thres, 
         
         img_input , masked_img = tranform_detections(masks,org_img,inflation) # transform detections to the size of the image (w,h)
         
-        cv2.write('output/' + fileName + '/' + fileName + str(frame_id) + '_input.png', img_input) # save input image
-        cv2.write('output/' + fileName + '/' + fileName + str(frame_id) + '_mask.png', masked_img) # save mask image
+        cv2.imwrite('output/' + fileName + '/' + fileName + str(frame_id) + '_input.png', img_input) # save input image
+        cv2.imwrite('output/' + fileName + '/' + fileName + str(frame_id) + '_mask.png', masked_img) # save mask image
         
           
     
