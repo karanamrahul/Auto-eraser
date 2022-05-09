@@ -102,7 +102,7 @@ def get_masks_image(image, objects_to_mask, fileName,frame_id,model_mask,thres, 
                 
         class_ids,scores,boxes,masks = filter_detections(objects_to_mask,class_ids,scores,boxes,masks) # filter detections based on objects to mask
         
-        w,h = org_img.shape[:2] # get image dimensions
+        w,h = org_img.shape[1],org_img.shape[0] # get image dimensions
         
         masks = utils.viz.expand_mask(masks,boxes,(w,h),scores) # expand masks to the size of the image (w,h)
         

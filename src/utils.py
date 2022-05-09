@@ -247,8 +247,6 @@ def visualize_mask_2(image,masks,labels,selected_label):
     
 
     
-if __name__=='__main__':
-    detect_voice_to_text(flag=True)
 
 
     
