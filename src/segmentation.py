@@ -1,3 +1,4 @@
+from MaskRCNN_and_Inpainting_Videos.Utils import HiddenPrints
 from helper import *
 from coco_names import *
 
@@ -16,9 +17,34 @@ def get_masks_video(path, objects_to_mask, min_confidence, inflation):
         fps: frames per second
 
     """
-    pass
     
+    with HiddenPrints():
+        model_mask_rcnn = model_zoo.get_model('mask_rcnn_fpn_resnet101_v1d_coco', pretrained=True) # get model
+    video = cv2.VideoCapture(path) # open video
+    frames_per_second = int(video.get(cv2.CAP_PROP_FRAME_COUNT)) # get number of frames
     
+    if (video.isOpened() == False):
+        print("Error opening video stream or file")
+        
+    
+    img_name = path.split(".")[0].split('/')[-1] # get name of the video
+    
+    try:
+        os.mkdir('output/' + img_name) # create output directory
+    except Exception:
+        pass
+    k = 0 
+    while (video.isOpened()):
+        ret,img  = video.read() # read frame
+        
+        if ret == False:
+            break
+        get_masks_image(img, objects_to_mask, img_name, k, model_mask_rcnn, min_confidence, inflation) # generate masks
+        
+        k = k + 1 # increment frame
+    video.release() # release video
+    
+    return frames_per_second
     
 
 def get_masks_image(image, objects_to_mask, fileName,frame_id,model_mask,thres, inflation):

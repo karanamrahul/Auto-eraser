@@ -8,6 +8,7 @@
 
 # Importing the libraries
 
+import traceback
 import numpy as np
 import cv2
 import time
@@ -16,6 +17,11 @@ import copy
 import mxnet as mx
 from gluoncv import data, utils, model_zoo
 from coco_names import COCO_INSTANCE_CATEGORY_NAMES as category_names
+import sys
+import glob
+import natsort
+
+
 
 def filter_detections(objects_to_mask,class_ids, scores, boxes, masks):
     
@@ -148,3 +154,61 @@ def only_white_px(img,k,i):
         pass
     
     return True
+
+
+
+class HiddenPrints: # class to hide prints from the console (for debugging) in the Auto-eraser
+    def __enter__(self): # enter the class and hide the prints
+        self._original_stdout = sys.stdout # save the original stdout in the class
+        sys.stdout = open(os.devnull, 'w') # set the stdout to null 
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout.close() # close the stdout file
+        sys.stdout = self._original_stdout # set the stdout to the original stdout (the one before the class was entered)
+        
+
+def frames_to_video(video_path,fps):
+    
+    """
+    @brief: Converts the frames to a video.
+    
+    Args:
+        video_path: path to the video
+        fps: frames per second
+        
+    Returns:
+        VideoOutput Path: path to the video output
+    """
+    
+    video_name = video_path.split(".")[0].split('/')[-1] # get the video name
+    out_dir = "output/" + video_name + "/*" # set the output directory
+    names_list = [] # list of frames names
+    
+    
+    for name in [os.path.normpath(x) for x in glob.glob(out_dir)]:
+        if name.split(".")[0][-3:] == "out":
+            names_list.append(name) # append the frame name to the list
+            
+    names_list = natsort.natsorted(names_list) # sort the list
+    
+    frame_list = [] # list of frames
+    size_img = (256,256) # shape of the frames
+    
+    for file in names_list:
+        img = cv2.imread(file) # read the frame
+        h,w,c = img.shape # get the shape of the frame
+        size_img = (w,h) # set the shape of the frame
+        frame_list.append(img) # append the frame to the list
+    video_out_name = "output/" + video_name + "_out.avi" # set the output video name
+    
+    out = cv2.VideoWriter(video_out_name, cv2.VideoWriter_fourcc(*'DIVX'), fps, size_img) # set the output video
+    for i in range(len(frame_list)):
+        try:
+            out.write(frame_list[i]) # write the frame to the video
+        except Exception :
+            print(traceback.format_exception())
+    out.release() # release the video
+    
+    return video_out_name # return the video output name
+        
+    
