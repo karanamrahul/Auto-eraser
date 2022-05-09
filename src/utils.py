@@ -61,8 +61,8 @@ def get_outputs(image , model , threshold):
     labels = [coco_names[i] for i in outputs[0]['labels']]
     # Add group-id to the same class as the labels
     
-      # Assign different group id to the same class label
-    labels = [i + '-' + str(j) for j,i in enumerate(labels)]
+    #   # Assign different group id to the same class label
+    # labels = [i + '-' + str(j) for j,i in enumerate(labels)]
     return masks , boxes , labels
 
 

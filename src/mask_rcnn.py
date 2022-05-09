@@ -7,7 +7,20 @@ from PIL import Image
 from utils import *
 from torchvision.transforms import transforms as transforms
 
-
+coco_names= [
+    '__background__', 'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
+    'train', 'truck', 'boat', 'traffic light', 'fire hydrant', 'N/A', 'stop sign',
+    'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow',
+    'elephant', 'bear', 'zebra', 'giraffe', 'N/A', 'backpack', 'umbrella', 'N/A', 'N/A',
+    'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball',
+    'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard', 'tennis racket',
+    'bottle', 'N/A', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl',
+    'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza',
+    'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'N/A', 'dining table',
+    'N/A', 'N/A', 'toilet', 'N/A', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone',
+    'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'N/A', 'book',
+    'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush'
+]
 
 parser = argparse.ArgumentParser(description='Mask R-CNN for Instance Segmentation')
 parser.add_argument('--image_path','--input',required=True,help='Path to the image')
@@ -15,7 +28,7 @@ parser.add_argument('-t','--threshold',default=0.965,type = float,help='Threshol
 args = vars(parser.parse_args())
 
 
-model =torchvision.models.detection.maskrcnn_resnet50_fpn(pretrained=True,progress = True ,num_classes=91)
+model =torchvision.models.detection.maskrcnn_resnet50_fpn(pretrained=True,num_classes=91)
 
 
 # Now we set the computation device to CPU or GPU if cuda is available
