@@ -34,20 +34,20 @@ if __name__ == "__main__":
     except Exception:
         pass
 
-    print("Looking for Magic Words in audio...")
     # objectsToMask = get_objs_to_mask(videoPath)
-    objectsToMask = "cat"
+    objectsToMask = "cat,bottle"
     print("Magic Word(s) found. Masking objects from the video...")
     fps = get_masks_video(videoPath, objectsToMask, minConfidence, inflation)
-
-    # print("Masking completed. Painting out masked objects...")
-    # inpaint_video(videoPath)
-
-    # print("Inpainting completed. Compiling to video...")
-    # compiledPath = frames_to_video(videoPath, fps)
     
 
-    # #remove soundless video
+    print("Masking completed. Painting out masked objects...")
+    inpaint_video(videoPath)
+
+    print("Inpainting completed. Compiling to video...")
+    compiledPath = frames_to_video(videoPath, fps)
+    
+
+    # # #remove soundless video
     # os.remove(compiledPath)
 
-    # print("Compiled! to " + compiledPath[:-3] + 'mp4')
+    print("Compiled! to " + compiledPath[:-3] + 'mp4')
