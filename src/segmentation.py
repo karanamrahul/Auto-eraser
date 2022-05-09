@@ -1,4 +1,3 @@
-from MaskRCNN_and_Inpainting_Videos.Utils import HiddenPrints
 from helper import *
 from coco_names import *
 
@@ -66,13 +65,13 @@ def get_masks_image(image, objects_to_mask, fileName,frame_id,model_mask,thres, 
     
     h, w, c = image.shape # height, width, channels
     
-    image = np.array(image)
+    image = mx.nd.array(image)
     a,org_img = data.transforms.presets.rcnn.transform_test(image, short=256)   # resize image to 256x256
     
     if objects_to_mask == "": # if no objects to mask
         img_name = fileName + str(frame_id)
         cv2.write('output/' + fileName + '/' + img_name + '_input.png', org_img) # save input image
-        img_black = np.zeros((h,w,c), np.uint8) # create black image 
+        img_black = copy.deepcopy(org_img) # create black image 
         j = 0 # row
         for row in img_black: # row in image to be masked (black)
             i =  0 # column
@@ -92,7 +91,7 @@ def get_masks_image(image, objects_to_mask, fileName,frame_id,model_mask,thres, 
         class_ids,scores, boxes , masks = [b[0].asnumpy() for b in model_mask(a)] # inference is done here
         
         for i in range(scores.size): # for each object in the image (scores.size = number of objects)
-            if (scores[i] > thres) and (scores[i] < 0.5): # if confidence is above threshold and below 0.5
+            if (scores[i] > thres) & (scores[i] < 0.5): # if confidence is above threshold and below 0.5
                 scores[i] = 0.5 # set confidence to 0.5 (to avoid masking too much)
                 
         class_ids,scores,boxes,masks = filter_detections(objects_to_mask,class_ids,scores,boxes,masks) # filter detections based on objects to mask

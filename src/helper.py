@@ -44,7 +44,7 @@ def filter_detections(objects_to_mask,class_ids, scores, boxes, masks):
     """
     objects_to_be_removed = [] # list of objects to be removed
     for i in objects_to_mask:   # i is the object to be masked
-        if i in objects_to_mask:    # if the object is in the list
+        if objects_to_mask:    # if the object is in the list
             objects_to_be_removed.append(category_names.get(i)) # get the name of the object
             
     obj_idx = []   # indices of objects to be removed
@@ -83,7 +83,7 @@ def tranform_detections(masks,original_image,inflate_size):
         for rows in img_copy: # loop over all rows
             i = 0    # i is the column index
             for element in rows: # loop over all elements
-                if (mask[k, i] != 0): # if the element is not black
+                if (mask[k,i] != 0): # if the element is not black
                     rows[i] = [255, 255, 255] # set the element to white
                 i = i + 1 # increment the column index
             k = k + 1 # increment the row index
@@ -93,7 +93,7 @@ def tranform_detections(masks,original_image,inflate_size):
         i = 0   # i is the column index
         for element in row: # loop over all elements
             if np.array_equal(element, [255, 255, 255]):    # if the element is white (not black)
-                if not only_white_px(img_output,k,i): # if the pixel is not only white
+                if not only_white_px(img_output,i,k): # if the pixel is not only white
                     img_output = cv2.circle(img_output, (i, k), inflate_size, (255,255,255),0) # inflate the pixel
             i = i + 1 # increment the column index
         k = k + 1 # increment the row index
