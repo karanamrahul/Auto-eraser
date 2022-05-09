@@ -20,6 +20,7 @@ from coco_names import COCO_INSTANCE_CATEGORY_NAMES as category_names
 import sys
 import glob
 import natsort
+import moviepy as mpy
 
 
 
@@ -185,7 +186,7 @@ def frames_to_video(video_path,fps):
     names_list = [] # list of frames names
     
     
-    for name in [os.path.normpath(x) for x in glob.glob(out_dir)]:
+    for name in [os.path.normpath(x) for x in glob.glob(out_dir)]: # loop over all frames
         if name.split(".")[0][-3:] == "out":
             names_list.append(name) # append the frame name to the list
             
@@ -201,14 +202,11 @@ def frames_to_video(video_path,fps):
         frame_list.append(img) # append the frame to the list
     video_out_name = "output/" + video_name + "_out.mp4" # set the output video name
     
-    out = cv2.VideoWriter(video_out_name, cv2.VideoWriter_fourcc(*'mp4v'), fps, size_img) # set the output video
-    for i in range(len(frame_list)):
-        try:
-            out.write(frame_list[i]) # write the frame to the video
-        except Exception :
-            print(traceback.format_exception())
-    out.release() # release the video
-    
-    return video_out_name # return the video output name
+   # Write the video frames to a video file using moviepy
+    outclip = mpy.VideoClip(make_frame=lambda t: frame_list[int(t*fps)], duration=len(frame_list)/fps)   # create the video clip
+    outclip.write_videofile(video_out_name, fps=fps) # write the video clip to the video file
+
+    return video_out_name
+   
         
     
