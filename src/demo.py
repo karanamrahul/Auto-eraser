@@ -35,7 +35,7 @@ if __name__ == "__main__":
         pass
 
     # objectsToMask = get_objs_to_mask(videoPath)
-    objectsToMask = "cat,bottle"
+    objectsToMask = "cat,person,dog,skateboard,surfboard"
     print("Magic Word(s) found. Masking objects from the video...")
     fps = get_masks_video(videoPath, objectsToMask, minConfidence, inflation)
     

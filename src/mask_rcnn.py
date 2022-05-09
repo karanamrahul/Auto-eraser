@@ -34,7 +34,7 @@ model =torchvision.models.detection.maskrcnn_resnet50_fpn(pretrained=True,num_cl
 # Now we set the computation device to CPU or GPU if cuda is available
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-
+device = 'cpu'
 
 # Now we load the model to the device and evaluate the model
 model.to(device).eval()
@@ -72,13 +72,15 @@ result_img =  result * 255.0
 # res = visualize_mask(original_img,masks,'elephant-1')
 # res2 =visualize_mask_2(original_img,masks,labels,selected_label=['elephant-1','elephant-4'])
 # mask,label = mask_from_image_user_select_label(masks,'person')
-result_img = np.dstack((result_img,result_img,result_img))
+# result_img = np.dstack((result_img,result_img,result_img))
 # res = cv2.bitwise_or(original_img,result_img)
-cv2.imshow("The",result_img)
+# cv2.imshow("The",result_img)
 # show_mask_with_img(original_img,masks[a],'person')
 # Now we show the image
-# cv2.imshow('Segmented Image',result)
-cv2.imwrite("/home/raul/Documents/Capstone_673/GMM/output/segmented_image.jpg",result)
+print("Help")
+cv2.imshow('Segmented Image',result)
+# cv2.imshow()
+# cv2.imwrite("/home/raul/Documents/Capstone_673/GMM/output/segmented_image.jpg",result)
 # cv2.imshow("Mask",res)
 
 cv2.waitKey(0)

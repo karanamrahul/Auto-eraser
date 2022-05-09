@@ -199,9 +199,9 @@ def frames_to_video(video_path,fps):
         h,w,c = img.shape # get the shape of the frame
         size_img = (w,h) # set the shape of the frame
         frame_list.append(img) # append the frame to the list
-    video_out_name = "output/" + video_name + "_out.avi" # set the output video name
+    video_out_name = "output/" + video_name + "_out.mp4" # set the output video name
     
-    out = cv2.VideoWriter(video_out_name, cv2.VideoWriter_fourcc(*'DIVX'), fps, size_img) # set the output video
+    out = cv2.VideoWriter(video_out_name, cv2.VideoWriter_fourcc(*'mp4v'), fps, size_img) # set the output video
     for i in range(len(frame_list)):
         try:
             out.write(frame_list[i]) # write the frame to the video
