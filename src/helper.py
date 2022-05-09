@@ -44,7 +44,7 @@ def filter_detections(objects_to_mask,class_ids, scores, boxes, masks):
     """
     objects_to_be_removed = [] # list of objects to be removed
     for i in objects_to_mask:   # i is the object to be masked
-        if objects_to_mask:    # if the object is in the list
+        if i:    # if the object is in the list
             objects_to_be_removed.append(category_names.get(i)) # get the name of the object
             
     obj_idx = []   # indices of objects to be removed
