@@ -20,7 +20,7 @@ from coco_names import COCO_INSTANCE_CATEGORY_NAMES as category_names
 import sys
 import glob
 import natsort
-import moviepy as mpy
+import moviepy.editor  as mpy
 
 
 
@@ -62,7 +62,7 @@ def filter_detections(objects_to_mask,class_ids, scores, boxes, masks):
     return class_ids, scores, boxes, masks
 
 
-def tranform_detections(masks,original_image,inflate_size):
+def transform_detections(masks,original_image,inflate_size):
     
     """
     @brief: Transforms the detections to the desired format for inpainting.
@@ -200,13 +200,118 @@ def frames_to_video(video_path,fps):
         h,w,c = img.shape # get the shape of the frame
         size_img = (w,h) # set the shape of the frame
         frame_list.append(img) # append the frame to the list
-    video_out_name = "output/" + video_name + "_out.mp4" # set the output video name
+    video_out_name = "output/" + video_name + "_out.avi" # set the output video name
+     # create the video writer
+    out = cv2.VideoWriter(video_out_name, cv2.VideoWriter_fourcc(*'DIVX'), fps, size_img)
+    for i in range(len(frame_list)):
+        # writing to a image array
+        try:
+            out.write(frame_list[i])
+        except Exception:
+            print(traceback.format_exception())
+    out.release() # release the video writer
     
-   # Write the video frames to a video file using moviepy
-    outclip = mpy.VideoClip(make_frame=lambda t: frame_list[int(t*fps)], duration=len(frame_list)/fps)   # create the video clip
-    outclip.write_videofile(video_out_name, fps=fps) # write the video clip to the video file
-
-    return video_out_name
+    return video_out_name # return the path to the video output
+  
    
-        
+def count_frames(videoPath):
+    """
+    @brief: Counts the frames of a video.
     
+    Args:
+        videoPath: path to the video
+        
+    Returns:
+        Number of frames: number of frames
+    
+    """
+    cap = cv2.VideoCapture(videoPath)
+
+    if (cap.isOpened() == False):
+        print("Error opening video stream or file")
+
+    i = 0
+    while (cap.isOpened()):
+        # Capture frame-by-frame
+        ret, frame = cap.read()
+
+        if ret == False:
+            break
+
+        i = i + 1
+
+    # When everything done, release the video capture object
+    cap.release()
+
+    return i
+def add_audio_to_video(originalVideoPath, outputVideoPath, fps):
+    """
+    @brief: Adds audio to a video.
+    
+    Args:
+        originalVideoPath: path to the original video
+        outputVideoPath: path to the output video
+        fps: frames per second
+    
+    Returns:
+        VideoOutput Path: path to the video output with audio
+    """
+    orig_audio = mpy.AudioFileClip(originalVideoPath)
+    with HiddenPrints():
+        out_clip = mpy.VideoFileClip(outputVideoPath)
+        final_clip = out_clip.set_audio(orig_audio)
+        final_clip.write_videofile(outputVideoPath[:-3] + 'mp4', fps=fps)
+        out_clip.close()
+    return
+        
+def show_output_video(video_path):
+    
+    """
+    @brief: Shows the output video in multiple windows.
+    
+    window - 1 - Mask
+    window - 2 - Output + Mask
+    window - 3 - Input Image + Mask
+    
+    
+    Args:
+        video_path: path to the video
+    """
+    
+    
+    video_name = video_path.split(".")[0].split('/')[-1] # get the video name
+    out_dir = "output/" + video_name + "/*" # set the output directory
+    input_list = [] # list of frames names
+    mask_list =    [] # list of masks names
+    output_list = [] # list of output frames names
+    
+    
+    for name in [os.path.normpath(x) for x in glob.glob(out_dir)]: # loop over all frames
+        if name.split(".")[0][-3:] == "out":
+            output_list.append(name) # append the frame name to the list
+        elif name.split(".")[0][-3:] == "put":
+            input_list.append(name)
+        elif name.split(".")[0][-3:] == "ask":
+            mask_list.append(name)
+            
+    input_list = natsort.natsorted(input_list) # sort the list
+    mask_list   = natsort.natsorted(mask_list) # sort the list
+    output_list = natsort.natsorted(output_list) # sort the list
+    
+    print(len(input_list))
+    print(len(output_list))
+    print(len(mask_list))
+    
+    for i in range(len(output_list)):
+        
+        input = cv2.imread(input_list[i]) # read the input frame
+        mask = cv2.imread(mask_list[i]) # read the mask
+        output = cv2.imread(output_list[i]) # read the output frame
+        a = np.hstack((mask,input, output)) # stack the frames
+        cv2.putText(a, "Input + Mask", (490,20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (100,22,125), 2)
+        cv2.putText(a, " Mask ", (0,20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,122,255), 2)
+        cv2.putText(a, "Output", (1000,20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (50,11,122), 2)
+
+        cv2.imshow("output", a) # show the frames
+        cv2.waitKey(50) # wait 1ms
+    cv2.destroyAllWindows() # destroy all windows
