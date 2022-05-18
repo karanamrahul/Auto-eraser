@@ -72,7 +72,7 @@ if __name__ == "__main__":
     print("Total number of frames in the video : ", counter)
     print("Masking in progress...")
     fps = get_masks_video(videoPath, objectsToMask, minConfidence, inflation) # get the masks for the video
-    
+    print("Frames per second : ", fps)
 
     print("Masking completed --> Now Removing the objects from the video...")
     inpaint_video(videoPath)   # inpaint the video

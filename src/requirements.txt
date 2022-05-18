@@ -1,0 +1,7 @@
+mxnet==1.7.0.post2
+tensorflow==1.7.1
+gluoncv==0.4.0
+git+https://github.com/JiahuiYu/neuralgym
+opencv-python==4.5.1.48
+natsort==7.1.1
+moviepy==1.0.3
